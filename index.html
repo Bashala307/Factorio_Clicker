@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factorio Clicker</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 100px auto;
+            align-items: center;
+        }
+        button {
+            width: 100px;            
+        }
+    </style>
+</head>
+<body>
+    <button id="diggingByHand">Копати руду</button>
+    <p id="totalNumber"></p>
+    <button id="buyDrill">Купити бур: 10 руди</button>
+    
+    <script>
+        let oreNumber = 0;        
+
+        document.getElementById("diggingByHand").addEventListener("click", function() {
+            oreNumberPlus();
+        })
+
+        document.getElementById("buyDrill").addEventListener("click", function() {
+            if (oreNumber >= 10) {
+            oreNumber -= 11;
+            oreNumberPlus();
+            setInterval(oreNumberPlus, 1000);
+            document.getElementById("buyDrill").style.display = "none" ;
+            }
+        })
+        
+        function oreNumberPlus(){
+            ++oreNumber;
+            document.getElementById("totalNumber").innerText = (`${oreNumber} руди`);            
+        }
+
+    </script>
+</body>
+</html>
+
