@@ -12,35 +12,159 @@
             margin: 100px auto;
             align-items: center;
         }
-        button {
-            width: 100px;            
+        
+        #buyDrill, #buyDrill2, #diggingByHand  {
+            font-size: 1rem;
+            width: 200px;   
+            color: #ffffff;
+            border: none; 
+            border-radius: 4px;
+            padding: 16px 30px;
         }
+        #diggingByHand {
+            background-color: orange;
+        }
+        #totalNumber {
+            font-size: 2rem;
+        }
+
+        #effectNumber {
+            color: green;
+            font-size: 1.1rem;
+            position: absolute;
+            transform: translate(-100px, 100px);
+            
+        }
+
+        .effectNumberAnim {
+            animation-name: myAnimation;
+            animation-duration: 0.4s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes myAnimation {
+            0%   {transform: translate(-100px, 50px);
+                opacity: 0;}
+            25%  {opacity: 1;}
+            50%  {opacity: 1;}
+            100% {transform: translate(-100px, 150px);
+                opacity: 0;}
+        }
+
+        .disabledButton {
+            display: flex;
+            background-color: #520b0b;
+        }
+        
+        .unshownButton {
+            display: none;
+        }
+        .unshownButton {
+            display: none;
+        }
+        .shownButton {
+            display: flex;
+            background-color: rgb(52, 192, 28);
+        }
+        .shownButton:hover {
+            transform: scale(0.98); 
+            background-color: green;
+        }
+        .shownButton:active {
+            transform: scale(0.88); 
+            background-color: rgb(0, 74, 0);
+        }
+        #diggingByHand:hover {
+            transform: scale(0.98); 
+            background-color: rgb(207, 135, 0);
+        }
+        #diggingByHand:active {
+            transform: scale(0.88); 
+            background-color: rgb(162, 105, 0);
+        }
+        
     </style>
 </head>
 <body>
-    <button id="diggingByHand">Копати руду</button>
+    <button id="diggingByHand">Добути руду</button>
     <p id="totalNumber"></p>
-    <button id="buyDrill">Купити бур: 10 руди</button>
+    <p id="effectNumber">+ 1</p>
+    <button id="buyDrill" class="unshownButton" >Придбати бур: 10 руди</button>
+    <button id="buyDrill2" class="unshownButton">Придбати більший бур: 20 руди</button>
     
     <script>
-        let oreNumber = 0;        
-
+        let oreNumber = 0;
+        let drillBought = false, drillBought2 = false; 
+        const buyDrillButton1 = document.getElementById("buyDrill");   
+        const buyDrillButton2 = document.getElementById("buyDrill2");      
+        
         document.getElementById("diggingByHand").addEventListener("click", function() {
             oreNumberPlus();
         })
 
-        document.getElementById("buyDrill").addEventListener("click", function() {
-            if (oreNumber >= 10) {
-            oreNumber -= 11;
-            oreNumberPlus();
+        function effectAnim() {
+            const effect = document.getElementById("effectNumber");
+    
+            // Спочатку скидаємо анімацію (прибираємо клас)
+            effect.className = "";
+            
+            // Маленький трюк, щоб браузер помітив скидання перед новим стартом
+            void effect.offsetWidth; 
+            
+            // Запускаємо заново
+            effect.className = "effectNumberAnim";
+        }
+
+        function checkShop() {
+            if (oreNumber >= 5 && (drillBought === false)) {
+                buyDrillButton1.classList.remove("unshownButton");
+                buyDrillButton1.classList.add("disabledButton");
+                buyDrillButton1.disabled = true;
+                if (oreNumber >= 10) {
+                    buyDrillButton1.classList.remove("disabledButton");
+                    buyDrillButton1.classList.add("shownButton");
+                    buyDrillButton1.disabled = false;
+                }
+            }
+            if (oreNumber >= 15 && (drillBought === true) && (drillBought2 === false) ) {
+                buyDrillButton2.classList.remove("unshownButton");
+                buyDrillButton2.classList.add("disabledButton");
+                buyDrillButton2.disabled = true;
+                if (oreNumber >= 20) {
+                    buyDrillButton2.classList.remove("disabledButton");
+                    buyDrillButton2.classList.add("shownButton");
+                    buyDrillButton2.disabled = false;
+                }
+            }
+        }
+
+        buyDrillButton1.addEventListener("click", function() {
+            if (oreNumber >= 10 && (drillBought === false)) {
+            oreNumber -= 10;
+            drillBought = true;
+            document.getElementById("totalNumber").innerText = (`${oreNumber} руди`)
             setInterval(oreNumberPlus, 1000);
-            document.getElementById("buyDrill").style.display = "none" ;
+            buyDrillButton1.style.display = "none" ;
+            }
+        })
+
+        buyDrillButton2.addEventListener("click", function() {
+            if (oreNumber >= 20 && (drillBought === true)) {
+            oreNumber -= 20;
+            drillBought2 = true;
+            document.getElementById("totalNumber").innerText = (`${oreNumber} руди`)
+            setInterval(oreNumberPlus, 500);
+            buyDrillButton2.style.display = "none" ;
             }
         })
         
         function oreNumberPlus(){
             ++oreNumber;
-            document.getElementById("totalNumber").innerText = (`${oreNumber} руди`);            
+            document.getElementById("totalNumber").innerText = (`${oreNumber} руди`);
+            checkShop();
+            effectAnim()
+
         }
 
     </script>
