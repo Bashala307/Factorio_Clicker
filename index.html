@@ -97,7 +97,33 @@
         let oreNumber = 0;
         let drillBought = false, drillBought2 = false; 
         const buyDrillButton1 = document.getElementById("buyDrill");   
-        const buyDrillButton2 = document.getElementById("buyDrill2");      
+        const buyDrillButton2 = document.getElementById("buyDrill2");    
+        
+        function loadGame() {
+            fetch('/get-progress')
+            .then(response => response.json())
+            .then(data => {
+                oreNumber = data.oreNumber || 0;
+                drillBought = data.drillBought || false;
+                drillBought2 = data.drillBought2 || false;
+                
+                document.getElementById("totalNumber").innerText = `${oreNumber} руди`;
+                
+                checkShop();
+                
+                if (drillBought === true) {
+                    setInterval(oreNumberPlus, 1000);
+                    buyDrillButton1.style.display = "none";
+                }
+                if (drillBought2 === true) {
+                    setInterval(oreNumberPlus, 500);
+                    buyDrillButton2.style.display = "none";
+                }
+            })
+            .catch(err => console.log("Файл збереження ще не створено, починаємо з нуля."));
+        }
+
+        loadGame();
         
         document.getElementById("diggingByHand").addEventListener("click", function() {
             oreNumberPlus();
@@ -160,6 +186,23 @@
             effectAnim()
 
         }
+
+        function saveGame() {
+            const dataToSave = {
+                oreNumber: oreNumber,
+                drillBought: drillBought,
+                drillBought2: drillBought2
+            };
+
+            fetch('/save-progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSave)
+            })
+            .then(response => response.json())
+            .then(data => console.log(data.message));
+        }
+        setInterval(saveGame, 1000);
 
     </script>
 </body>
