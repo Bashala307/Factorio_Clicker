@@ -83,7 +83,26 @@
             transform: scale(0.88); 
             background-color: rgb(162, 105, 0);
         }
-        
+
+        #manualSaveBtn {
+            font-size: 1rem;
+            width: 200px;   
+            color: #ffffff;
+            border: none; 
+            border-radius: 4px;
+            padding: 16px 30px;
+            background-color: green;
+        }
+
+        #manualSaveBtn:hover {
+            transform: scale(0.98); 
+            background-color: rgb(0, 104, 0);
+        }
+
+        #manualSaveBtn:active {
+            transform: scale(0.88); 
+            background-color: rgb(0, 90, 0);
+        }
     </style>
 </head>
 <body>
@@ -92,7 +111,7 @@
     <p id="effectNumber">+ 1</p>
     <button id="buyDrill" class="unshownButton" >Придбати бур: 10 руди</button>
     <button id="buyDrill2" class="unshownButton">Придбати більший бур: 20 руди</button>
-    
+    <button id="manualSaveBtn">💾 Зберегти гру</button>
     <script>
         let oreNumber = 0;
         let drillBought = false, drillBought2 = false; 
@@ -202,7 +221,12 @@
             .then(response => response.json())
             .then(data => console.log(data.message));
         }
-        setInterval(saveGame, 1000);
+
+        document.getElementById("manualSaveBtn").addEventListener("click", function() {
+            saveGame();
+            alert("Прогрес збережено!"); // Або якась красива анімація тексту
+        });
+        setInterval(saveGame, 10000);
 
     </script>
 </body>
