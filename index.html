@@ -105,14 +105,8 @@
 
         function effectAnim() {
             const effect = document.getElementById("effectNumber");
-    
-            // Спочатку скидаємо анімацію (прибираємо клас)
             effect.className = "";
-            
-            // Маленький трюк, щоб браузер помітив скидання перед новим стартом
-            void effect.offsetWidth; 
-            
-            // Запускаємо заново
+            void effect.offsetWidth;
             effect.className = "effectNumberAnim";
         }
 
