@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factorio Clicker</title>
     <style>
-        body {
+        body {            
+            box-sizing: border-box;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
             display: flex;
             flex-direction: column;
             gap: 30px;
-            margin: 100px auto;
+            margin:150px 0 auto;
             align-items: center;
+            max-height: 600px;
         }
         
         #buyDrill, #buyDrill2, #diggingByHand  {
@@ -26,6 +33,7 @@
         }
         #totalNumber {
             font-size: 2rem;
+            margin: 100px 0 ;
         }
 
         #effectNumber {
@@ -33,6 +41,7 @@
             font-size: 1.1rem;
             position: absolute;
             transform: translate(-100px, 100px);
+            margin: 0;
             
         }
 
@@ -48,7 +57,7 @@
                 opacity: 0;}
             25%  {opacity: 1;}
             50%  {opacity: 1;}
-            100% {transform: translate(-100px, 150px);
+            100% {transform: translate(-100px, 100px);
                 opacity: 0;}
         }
 
@@ -60,11 +69,9 @@
         .unshownButton {
             display: none;
         }
-        .unshownButton {
-            display: none;
-        }
+        
         .shownButton {
-            display: flex;
+            
             background-color: rgb(52, 192, 28);
         }
         .shownButton:hover {
@@ -83,21 +90,60 @@
             transform: scale(0.88); 
             background-color: rgb(162, 105, 0);
         }
-        
+        #reset {
+            margin-top: 100px;
+        }
+        .transparentButton {
+            background-color: transparent;
+            color: transparent;
+        }
     </style>
 </head>
 <body>
-    <button id="diggingByHand">Добути руду</button>
-    <p id="totalNumber"></p>
-    <p id="effectNumber">+ 1</p>
-    <button id="buyDrill" class="unshownButton" >Придбати бур: 10 руди</button>
-    <button id="buyDrill2" class="unshownButton">Придбати більший бур: 20 руди</button>
-    
+    <section class="container">
+        
+        <p id="totalNumber"></p>
+        <p id="effectNumber">+ 1</p>
+        <button id="buyDrill" class="transparentButton" >Придбати бур: 10 руди</button>
+        <button id="buyDrill2" class="unshownButton">Придбати більший бур: 20 руди</button>
+        
+        <button id="diggingByHand">Добути руду</button>
+        <button id="reset">Reset</button>
+    </section>
     <script>
         let oreNumber = 0;
         let drillBought = false, drillBought2 = false; 
         const buyDrillButton1 = document.getElementById("buyDrill");   
-        const buyDrillButton2 = document.getElementById("buyDrill2");      
+        const buyDrillButton2 = document.getElementById("buyDrill2");  
+        loadGame();
+        function loadGame() {
+            // 1. Намагаємося дістати рядок із LocalStorage
+            const savedData = localStorage.getItem('factorio_clicker_save');
+
+            // 2. Перевіряємо, чи там взагалі щось є
+            if (savedData) {
+                const gameProgress = JSON.parse(savedData);
+                oreNumber = gameProgress.oreNumber || 0;
+                drillBought = gameProgress.drillBought || false;
+                drillBought2 = gameProgress.drillBought2 || false;
+                document.getElementById('totalNumber').innerText = (`${oreNumber} руди`);
+
+                if (drillBought) {setInterval(oreNumberPlus, 1000); }
+                    if (drillBought2) {setInterval(oreNumberPlus, 500);
+                        console.log("Прогрес успішно завантажено з LocalStorage!");
+                    } 
+                console.log("Прогрес успішно завантажено з LocalStorage!");
+                setInterval(saveGame, 1000);    
+            } else {console.log("Сейву не знайдено, починаємо нову гру з нуля."); }
+        }
+
+        document.getElementById("reset").addEventListener("click", function() {
+            oreNumber = 0;
+            drillBought = false;
+            drillBought2 = false;
+            saveGame();
+            location.reload()
+        })  
         
         document.getElementById("diggingByHand").addEventListener("click", function() {
             oreNumberPlus();
@@ -118,7 +164,7 @@
 
         function checkShop() {
             if (oreNumber >= 5 && (drillBought === false)) {
-                buyDrillButton1.classList.remove("unshownButton");
+                buyDrillButton1.classList.remove("transparentButton");
                 buyDrillButton1.classList.add("disabledButton");
                 buyDrillButton1.disabled = true;
                 if (oreNumber >= 10) {
@@ -128,7 +174,7 @@
                 }
             }
             if (oreNumber >= 15 && (drillBought === true) && (drillBought2 === false) ) {
-                buyDrillButton2.classList.remove("unshownButton");
+                buyDrillButton2.classList.remove("transparentButton");
                 buyDrillButton2.classList.add("disabledButton");
                 buyDrillButton2.disabled = true;
                 if (oreNumber >= 20) {
@@ -145,7 +191,11 @@
             drillBought = true;
             document.getElementById("totalNumber").innerText = (`${oreNumber} руди`)
             setInterval(oreNumberPlus, 1000);
-            buyDrillButton1.style.display = "none" ;
+            buyDrillButton1.classList.remove("shownButton");
+            buyDrillButton1.classList.add("unshownButton");
+            buyDrillButton2.classList.remove("unshownButton");
+            buyDrillButton2.classList.add("transparentButton");
+            buyDrillButton1.disabled = true;
             }
         })
 
@@ -155,7 +205,9 @@
             drillBought2 = true;
             document.getElementById("totalNumber").innerText = (`${oreNumber} руди`)
             setInterval(oreNumberPlus, 500);
-            buyDrillButton2.style.display = "none" ;
+            buyDrillButton2.classList.remove("shownButton");
+            buyDrillButton2.classList.add("transparentButton");
+            buyDrillButton2.disabled = true;
             }
         })
         
@@ -166,6 +218,21 @@
             effectAnim()
 
         }
+
+        function saveGame() {
+            // 1. Збираємо всі поточні дані гри в один об'єкт
+            const gameProgress = {
+                oreNumber: oreNumber,
+                drillBought: drillBought,
+                drillBought2: drillBought2
+            };
+
+            const stringData = JSON.stringify(gameProgress);
+            localStorage.setItem('factorio_clicker_save', stringData);
+            console.log("Прогрес успішно збережено в LocalStorage браузера!");
+        }
+
+        
 
     </script>
 </body>
