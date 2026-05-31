@@ -134,7 +134,9 @@
                     } 
                 console.log("Прогрес успішно завантажено з LocalStorage!");
                 setInterval(saveGame, 1000);    
-            } else {console.log("Сейву не знайдено, починаємо нову гру з нуля."); }
+            } else {console.log("Сейву не знайдено, починаємо нову гру з нуля.");
+                    setInterval(saveGame, 1000);  
+             }
         }
 
         document.getElementById("reset").addEventListener("click", function() {
