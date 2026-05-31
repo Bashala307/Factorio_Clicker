@@ -9,12 +9,24 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 app.get('/get-progress', (req, res) => {
-    
-    if (fs.existsSync('save.json')) {
-        const saveData = fs.readFileSync('save.json', 'utf8');
-        res.json(JSON.parse(saveData)); 
-    } else {
-        res.json({ oreNumber: 0, drillBought: false, drillBought2: false });
+    try {
+        
+        if (fs.existsSync('save.json')) {
+            const saveData = fs.readFileSync('save.json', 'utf8');
+            
+        
+            if (!saveData.trim()) {
+                return res.json({ oreNumber: 0, drillBought: false, drillBought2: false });
+            }
+            
+            
+            return res.json(JSON.parse(saveData));
+        } else {
+            return res.json({ oreNumber: 0, drillBought: false, drillBought2: false });
+        }
+    } catch (error) {
+        console.error("Помилка при читанні сейву:", error);
+        return res.json({ oreNumber: 0, drillBought: false, drillBought2: false });
     }
 });
 
